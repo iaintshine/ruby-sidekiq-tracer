@@ -1,7 +1,7 @@
 require "bundler/setup"
 require "tracing-matchers"
 require "sidekiq/testing"
-require "sidekiq/tracer"
+require "sidekiq-opentracing"
 require "pry"
 
 Sidekiq::Testing.fake!

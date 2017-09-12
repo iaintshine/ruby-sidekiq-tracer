@@ -7,7 +7,7 @@ OpenTracing instrumentation for Sidekiq (both client, and server-side).
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'sidekiq-tracer'
+gem 'sidekiq-opentracing'
 ```
 
 And then execute:
@@ -16,7 +16,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install sidekiq-tracer
+    $ gem install sidekiq-opentracing
 
 ## Usage
 
@@ -28,7 +28,7 @@ The gem hooks up into Sidekiq through [middlewares](https://github.com/mperham/s
 To instrument Sidekiq (both sides), you need to specify at least a tracer instance and optionally an active span provider - a proc which returns a current active span. The gem plays nicely with [spanmanager](https://github.com/iaintshine/ruby-spanmanager).
 
 ```ruby
-require "sidekiq-tracer"
+require "sidekiq-opentracing"
 
 Sidekiq::Tracer.instrument(tracer: OpenTracing.global_tracer,
                            active_span: -> { OpenTracing.global_tracer.active_span })

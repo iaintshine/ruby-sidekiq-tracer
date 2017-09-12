@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "sidekiq/tracer/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "sidekiq-tracer"
+  spec.name          = "sidekiq-opentracing"
   spec.version       = Sidekiq::Tracer::VERSION
   spec.authors       = ["iaintshine"]
   spec.email         = ["bodziomista@gmail.com"]

@@ -1,5 +1,4 @@
 require "spec_helper"
-require "json"
 
 RSpec.describe Sidekiq::Tracer::ClientMiddleware do
   let(:tracer) { Test::Tracer.new }

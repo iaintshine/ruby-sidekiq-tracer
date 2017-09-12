@@ -9,12 +9,12 @@ module Sidekiq
       end
 
       def call(worker_class, job, queue, redis_pool)
-        span = tracer.start_span(worker_class,
+        span = tracer.start_span(job['class'],
                                  child_of: active_span.respond_to?(:call) ? active_span.call : active_span,
                                  tags: {
                                   'component' => 'Sidekiq',
                                   'span.kind' => 'client',
-                                  'sidekiq.queue' => queue,
+                                  'sidekiq.queue' => job['queue'],
                                   'sidekiq.jid' => job['jid'],
                                   'sidekiq.retry' => job['retry'].to_s,
                                   'sidekiq.args' => job['args'].join(", ")

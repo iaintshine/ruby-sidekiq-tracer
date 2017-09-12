@@ -30,6 +30,12 @@ module Sidekiq
             chain.add Sidekiq::Tracer::ServerMiddleware, tracer: tracer, active_span: active_span
           end
         end
+
+        if defined?(Sidekiq::Testing)
+          Sidekiq::Testing.server_middleware do |chain|
+            chain.add Sidekiq::Tracer::ServerMiddleware, tracer: tracer, active_span: active_span
+          end
+        end
       end
     end
   end

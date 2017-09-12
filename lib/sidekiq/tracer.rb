@@ -1,6 +1,8 @@
 require "sidekiq"
 
 require "sidekiq/tracer/version"
+require "sidekiq/tracer/constants"
+require "sidekiq/tracer/commons"
 require "sidekiq/tracer/client_middleware"
 require "sidekiq/tracer/server_middleware"
 

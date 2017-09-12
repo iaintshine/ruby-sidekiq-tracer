@@ -1,6 +1,6 @@
 module Sidekiq
   module Tracer
-    class ClientMiddleware
+    class ServerMiddleware
       attr_reader :tracer, :active_span
 
       def initialize(tracer:, active_span:)
@@ -8,22 +8,19 @@ module Sidekiq
         @active_span = active_span
       end
 
-      def call(worker_class, job, queue, redis_pool)
+      def call(worker, job, queue)
+        parent_span_context = extract(job)
+
         span = tracer.start_span(job['class'],
-                                 child_of: active_span.respond_to?(:call) ? active_span.call : active_span,
+                                 child_of: parent_span_context,
                                  tags: {
                                   'component' => 'Sidekiq',
-                                  'span.kind' => 'client',
+                                  'span.kind' => 'server',
                                   'sidekiq.queue' => job['queue'],
                                   'sidekiq.jid' => job['jid'],
                                   'sidekiq.retry' => job['retry'].to_s,
                                   'sidekiq.args' => job['args'].join(", ")
                                  })
-
-        carrier = {}
-        tracer.inject(span.context, OpenTracing::FORMAT_TEXT_MAP, carrier)
-        job['Trace-Context'] = carrier
-
         yield
       rescue Exception => e
         if span
@@ -33,6 +30,15 @@ module Sidekiq
         raise
       ensure
         span.finish if span
+      end
+
+      private
+
+      def extract(job)
+        carrier = job['Trace-Context']
+        return unless carrier
+
+        tracer.extract(OpenTracing::FORMAT_TEXT_MAP, carrier)
       end
     end
   end

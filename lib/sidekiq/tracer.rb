@@ -29,13 +29,13 @@ module Sidekiq
           end
 
           config.server_middleware do |chain|
-            chain.add Sidekiq::Tracer::ServerMiddleware, tracer: tracer, active_span: active_span
+            chain.add Sidekiq::Tracer::ServerMiddleware, tracer: tracer
           end
         end
 
         if defined?(Sidekiq::Testing)
           Sidekiq::Testing.server_middleware do |chain|
-            chain.add Sidekiq::Tracer::ServerMiddleware, tracer: tracer, active_span: active_span
+            chain.add Sidekiq::Tracer::ServerMiddleware, tracer: tracer
           end
         end
       end

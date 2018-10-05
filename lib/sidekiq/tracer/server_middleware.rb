@@ -3,29 +3,30 @@ module Sidekiq
     class ServerMiddleware
       include Commons
 
-      attr_reader :tracer, :active_span
+      attr_reader :tracer
 
-      def initialize(tracer:, active_span:)
+      def initialize(tracer:)
         @tracer = tracer
-        @active_span = active_span
       end
 
       def call(worker, job, queue)
         parent_span_context = extract(job)
 
-        span = tracer.start_span(operation_name(job),
-                                 child_of: parent_span_context,
-                                 tags: tags(job, 'server'))
+        scope = tracer.start_active_span(
+          operation_name(job),
+          child_of: parent_span_context,
+          tags: tags(job, 'server')
+        )
 
         yield
       rescue Exception => e
-        if span
-          span.set_tag('error', true)
-          span.log(event: 'error', :'error.object' => e)
+        if scope
+          scope.span.set_tag('error', true)
+          scope.span.log(event: 'error', :'error.object' => e)
         end
         raise
       ensure
-        span.finish if span
+        scope.close if scope
       end
 
       private

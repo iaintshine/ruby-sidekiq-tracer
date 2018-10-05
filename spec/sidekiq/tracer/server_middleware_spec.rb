@@ -3,6 +3,10 @@ require "spec_helper"
 RSpec.describe Sidekiq::Tracer::ServerMiddleware do
   let(:tracer) { OpenTracingTestTracer.build }
 
+  before do
+    TestJob.tracer = tracer
+  end
+
   describe "auto-instrumentation" do
     before do
       schedule_test_job
@@ -68,6 +72,24 @@ RSpec.describe Sidekiq::Tracer::ServerMiddleware do
     end
   end
 
+  describe 'active span propagation' do
+    let(:root_span) { tracer.start_span('root') }
+
+    before do
+      Sidekiq::Tracer.instrument(tracer: tracer, active_span: -> { root_span })
+      schedule_test_job
+      root_span.finish
+    end
+
+    it 'sets server span as active span' do
+      active_span_id = TestJob.process_job(TestJob.jobs.first)
+      server_span = tracer.spans[2]
+
+      expect(active_span_id).to eq(server_span.context.span_id)
+    end
+  end
+
+
   def schedule_test_job
     TestJob.perform_async("value1", "value2", 1)
   end
@@ -75,7 +97,12 @@ RSpec.describe Sidekiq::Tracer::ServerMiddleware do
   class TestJob
     include Sidekiq::Worker
 
+    class << self
+      attr_accessor :tracer
+    end
+
     def perform(*args)
+      self.class.tracer.active_span.context.span_id
     end
   end
 end

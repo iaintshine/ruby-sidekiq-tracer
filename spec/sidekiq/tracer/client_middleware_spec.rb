@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe Sidekiq::Tracer::ClientMiddleware do
-  let(:tracer) { Test::Tracer.new }
+  let(:tracer) { OpenTracingTestTracer.build }
 
   describe "pushing to the queue" do
     before do
@@ -21,31 +21,31 @@ RSpec.describe Sidekiq::Tracer::ClientMiddleware do
     end
 
     it "creates a new span" do
-      expect(tracer).to have_spans
+      expect(tracer.spans.count).to eq(1)
     end
 
     it "sets operation_name to job name" do
-      expect(tracer).to have_span("TestJob")
+      expect(tracer.spans.first.operation_name).to eq("TestJob")
     end
 
     it "sets standard OT tags" do
-      [
-        ['component', 'Sidekiq'],
-        ['span.kind', 'client']
-      ].each do |key, value|
-        expect(tracer).to have_span.with_tag(key, value)
-      end
+      span = tracer.spans.first
+
+      expect(span.tags).to include(
+        'component' => 'Sidekiq',
+        'span.kind' => 'client'
+      )
     end
 
     it "sets Sidekiq specific OT tags" do
-      [
-        ['sidekiq.queue', 'default'],
-        ['sidekiq.retry', "true"],
-        ['sidekiq.args', "value1, value2, 1"],
-        ['sidekiq.jid', /\S+/]
-      ].each do |key, value|
-        expect(tracer).to have_span.with_tag(key, value)
-      end
+      span = tracer.spans.first
+
+      expect(span.tags).to include(
+        'sidekiq.queue' => 'default',
+        'sidekiq.retry' => 'true',
+        'sidekiq.args' => 'value1, value2, 1',
+        'sidekiq.jid' => /\S+/
+      )
     end
   end
 
@@ -57,13 +57,12 @@ RSpec.describe Sidekiq::Tracer::ClientMiddleware do
       schedule_test_job
     end
 
-    it "creates the new span with active span trace_id" do
-      expect(tracer).to have_traces(1)
-      expect(tracer).to have_spans(2)
-    end
-
     it "creates the new span with active span as a parent" do
-      expect(tracer).to have_span.with_parent(root_span)
+      expect(tracer.spans.count).to eq(2)
+      expect(tracer.spans.first).to eq(root_span)
+      child_span = tracer.spans.last
+
+      expect(child_span.context.parent_id).to eq(root_span.context.span_id)
     end
   end
 
@@ -74,13 +73,14 @@ RSpec.describe Sidekiq::Tracer::ClientMiddleware do
     end
 
     it "injects span context to enqueued job" do
-      enqueued_span = tracer.finished_spans.last
+      enqueued_span = tracer.spans.last
 
       job = TestJob.jobs.last
       carrier = job['Trace-Context']
       extracted_span_context = tracer.extract(OpenTracing::FORMAT_TEXT_MAP, carrier)
 
-      expect(enqueued_span.context).to eq(extracted_span_context)
+      expect(enqueued_span.context.trace_id).to eq(extracted_span_context.trace_id)
+      expect(enqueued_span.context.span_id).to eq(extracted_span_context.span_id)
     end
   end
 

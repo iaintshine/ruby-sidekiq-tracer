@@ -1,8 +1,10 @@
 require "bundler/setup"
-require "tracing-matchers"
 require "sidekiq/testing"
 require "sidekiq-opentracing"
+require 'opentracing_test_tracer'
 require "pry"
+
+OpenTracing.global_tracer = OpenTracingTestTracer.build
 
 Sidekiq::Testing.fake!
 

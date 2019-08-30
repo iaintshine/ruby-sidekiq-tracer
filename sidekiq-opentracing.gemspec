@@ -4,15 +4,15 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "sidekiq/tracer/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "sidekiq-opentracing"
+  spec.name          = "sidekiq-opentracing-dox-fork"
   spec.version       = Sidekiq::Tracer::VERSION
-  spec.authors       = ["iaintshine"]
-  spec.email         = ["bodziomista@gmail.com"]
+  spec.authors       = ["iaintshine", "Doximity"]
+  spec.email         = ["ops@doximity.com"]
   spec.license       = "Apache-2.0"
 
   spec.summary       = %q{OpenTracing instrumentation for Sidekiq.}
   spec.description   = %q{}
-  spec.homepage      = "https://github.com/iaintshine/ruby-sidekiq-tracer"
+  spec.homepage      = "https://github.com/doximity/ruby-sidekiq-tracer"
 
   spec.required_ruby_version = ">= 2.2.0"
 

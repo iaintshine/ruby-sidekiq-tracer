@@ -21,7 +21,7 @@ RSpec.describe Sidekiq::Tracer::ServerMiddleware do
     it "sets standard OT tags" do
       [
         ['component', 'Sidekiq'],
-        ['span.kind', 'server']
+        ['span.kind', 'consumer']
       ].each do |key, value|
         expect(tracer).to have_span.with_tag(key, value)
       end
@@ -39,7 +39,7 @@ RSpec.describe Sidekiq::Tracer::ServerMiddleware do
     end
   end
 
-  describe "client-server trace context propagation" do
+  describe "trace context propagation" do
     let(:root_span) { tracer.start_span("root") }
 
     before do
@@ -53,15 +53,8 @@ RSpec.describe Sidekiq::Tracer::ServerMiddleware do
       expect(tracer).to have_spans(3)
     end
 
-    it "all spans contains the same trace_id" do
-      expect(tracer).to have_traces(1)
-    end
-
-    it "propagates parent child relationship properly" do
-      client_span = tracer.finished_spans[0]
-      server_span = tracer.finished_spans[1]
-      expect(client_span).to be_child_of(root_span)
-      expect(server_span).to be_child_of(client_span)
+    it "creates separate traces for the producer and consumer" do
+      expect(tracer).to have_traces(2)
     end
   end
 

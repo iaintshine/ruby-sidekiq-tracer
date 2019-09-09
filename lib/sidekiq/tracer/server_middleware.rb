@@ -13,9 +13,11 @@ module Sidekiq
       def call(worker, job, queue)
         parent_span_context = extract(job)
 
+        follows_from = OpenTracing::Reference.follows_from(parent_span_context)
+        
         span = tracer.start_span(operation_name(job),
-                                 child_of: parent_span_context,
-                                 tags: tags(job, 'server'))
+                                 references: [follows_from],
+                                 tags: tags(job, 'consumer'))
 
         yield
       rescue Exception => e

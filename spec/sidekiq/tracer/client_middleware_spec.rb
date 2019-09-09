@@ -31,7 +31,7 @@ RSpec.describe Sidekiq::Tracer::ClientMiddleware do
     it "sets standard OT tags" do
       [
         ['component', 'Sidekiq'],
-        ['span.kind', 'client']
+        ['span.kind', 'producer']
       ].each do |key, value|
         expect(tracer).to have_span.with_tag(key, value)
       end

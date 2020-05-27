@@ -62,16 +62,18 @@ Sidekiq.configure_client do |config|
 end
 ```
 
-## Development
+# Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+## Gem documentation
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+You can find the documentation by going to CircleCI, looking for the `build` job, going to Artifacts and clicking on `index.html`. A visual guide on this can be found in our wiki at [Gems Development: Where to find documentation for our gems](https://wiki.doximity.com/articles/gems-development-where-to-find-documentation-for-our-gems).
 
-## Contributing
+## Gem development
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/iaintshine/ruby-sidekiq-tracer. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+After checking out the repo, run `bundle install` to install dependencies. Then, run `rake spec` to run the tests.
+You can also run `bundle console` for an interactive prompt that will allow you to experiment.
 
-## Code of Conduct
+This repository uses a gem publishing mechanism on the CI configuration, meaning most work related with cutting a new
+version is done automatically.
 
-Everyone interacting in the Sidekiq::Tracer project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/iaintshine/ruby-sidekiq-tracer/blob/master/CODE_OF_CONDUCT.md).
+To release a new version, follow the [wiki instructions](https://wiki.doximity.com/articles/gems-development-releasing-new-versions).

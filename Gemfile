@@ -1,10 +1,6 @@
-source "https://rubygems.org"
+# frozen_string_literal: true
 
-git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+# BEFORE changing this file, read https://wiki.doximity.com/articles/gemfile-maintenance
+source "https://artifacts.dox.support/repository/gems"
 
-# Specify your gem's dependencies in sidekiq-tracer.gemspec
 gemspec
-
-gem 'pry'
-gem 'pry-stack_explorer'
-gem 'pry-byebug'

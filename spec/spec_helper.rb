@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 require "bundler/setup"
 require "tracing-matchers"
 require "sidekiq/testing"
-require "sidekiq-opentracing"
-require "pry"
+require "sidekiq/tracer"
 
 Sidekiq::Testing.fake!
 
@@ -17,7 +18,7 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.before(:each) do
+  config.before do
     Sidekiq::Worker.clear_all
   end
 end

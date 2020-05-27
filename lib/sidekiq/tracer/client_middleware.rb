@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Sidekiq
   module Tracer
     class ClientMiddleware
@@ -10,25 +12,31 @@ module Sidekiq
         @active_span = active_span
       end
 
-      def call(worker_class, job, queue, redis_pool)
-        span = tracer.start_span(operation_name(job),
-                                 child_of: active_span.respond_to?(:call) ? active_span.call : active_span,
-                                 tags: tags(job, 'client'))
+      def call(_worker_class, job, _queue, _redis_pool)
+        span = build_span(job)
 
         inject(span, job)
 
         yield
-      rescue Exception => e
-        if span
-          span.set_tag('error', true)
-          span.log(event: 'error', :'error.object' => e)
-        end
+      rescue StandardError => e
+        tag_errors(span, e) if span
         raise
       ensure
-        span.finish if span
+        span&.finish
       end
 
       private
+
+      def build_span(job)
+        tracer.start_span(operation_name(job),
+                          child_of: active_span.respond_to?(:call) ? active_span.call : active_span,
+                          tags: tags(job, "producer"))
+      end
+
+      def tag_errors(span, error)
+        span.set_tag("error", true)
+        span.log(event: "error", 'error.object': error)
+      end
 
       def inject(span, job)
         carrier = {}

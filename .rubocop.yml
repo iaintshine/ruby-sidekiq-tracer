@@ -31,5 +31,5 @@
     Exclude:
       - "./**/*_spec*.rb"
 
-  Rails/ApplicationRecord:
+  Rails:
     Enabled: false

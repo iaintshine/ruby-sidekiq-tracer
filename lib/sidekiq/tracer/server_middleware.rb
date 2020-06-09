@@ -32,6 +32,7 @@ module Sidekiq
 
         tracer.start_span(operation_name(job),
                           references: [follows_from],
+                          ignore_active_scope: true,
                           tags: tags(job, "consumer"))
       end
 

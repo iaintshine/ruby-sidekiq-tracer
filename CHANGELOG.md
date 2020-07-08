@@ -1,6 +1,9 @@
 
 Changelog
 =========
+## 1.2.1 07/09/2020
+  * Ensure child spans are nested under the root Sidekiq span in the trace
+
 ## 1.2.0 05/28/2020
   * Ignore active scope in consumers
 

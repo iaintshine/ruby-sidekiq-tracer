@@ -12,23 +12,25 @@ module Sidekiq
         @active_span = active_span
       end
 
+      # rubocop:disable Metrics/MethodLength
       def call(_worker, job, _queue)
         parent_span_context = extract(job)
 
         follows_from = OpenTracing::Reference.follows_from(parent_span_context)
 
         tracer.start_active_span(operation_name(job),
-                          references: [follows_from],
-                          ignore_active_scope: true,
-                          tags: tags(job, "consumer")) do |scope|
-                            begin
-                              yield
-                            rescue StandardError => e
-                              tag_errors(scope.span, e) if scope.span
-                              raise
-                            end
-                          end
+                                 references: [follows_from],
+                                 ignore_active_scope: true,
+                                 tags: tags(job, "consumer")) do |scope|
+          begin
+            yield
+          rescue StandardError => e
+            tag_errors(scope.span, e) if scope.span
+            raise
+          end
+        end
       end
+      # rubocop:enable Metrics/MethodLength
 
       private
 

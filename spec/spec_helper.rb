@@ -12,6 +12,11 @@ module TestTracerUpdates
   def start_span(operation_name, child_of: nil, references: nil, start_time: Time.now, tags: nil, ignore_active_scope: false)
     super(operation_name, child_of: child_of, references: references, start_time: start_time, tags: tags)
   end
+
+  def start_active_span(operation_name, child_of: nil, references: nil, start_time: Time.now, tags: nil, ignore_active_scope: false)
+    start_span(operation_name, child_of: child_of, references: references, start_time: start_time, tags: tags)
+    yield
+  end
 end
 Test::Tracer.prepend TestTracerUpdates
 # rubocop:enable Metrics/ParameterLists, Lint/UnusedMethodArgument, Layout/LineLength

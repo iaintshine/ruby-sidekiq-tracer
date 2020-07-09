@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sidekiq-instrumentation (1.2.0)
+    sidekiq-instrumentation (1.2.1)
       opentracing (>= 0.3.1)
 
 GEM
@@ -90,4 +90,4 @@ DEPENDENCIES
   tracing-matchers (~> 1.0, >= 1.3.0)
 
 BUNDLED WITH
-   1.17.2
+   1.17.3

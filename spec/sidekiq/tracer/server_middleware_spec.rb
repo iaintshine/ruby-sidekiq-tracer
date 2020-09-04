@@ -41,6 +41,17 @@ RSpec.describe Sidekiq::Tracer::ServerMiddleware do
     end
   end
 
+  describe "after trace hook" do
+    it "calls hook if defined" do
+      after_trace = double("after_trace")
+      expect(after_trace).to receive(:call)
+
+      schedule_test_job
+      Sidekiq::Tracer.instrument_server(tracer: tracer, after_trace: after_trace)
+      TestJob.drain
+    end
+  end
+
   describe "trace context propagation" do
     let(:root_span) { tracer.start_span("root") }
 
@@ -63,12 +74,9 @@ RSpec.describe Sidekiq::Tracer::ServerMiddleware do
   def schedule_test_job
     TestJob.perform_async("value1", "value2", 1)
   end
-
-  # rubocop:disable RSpec/LeakyConstantDeclaration
   class TestJob
     include Sidekiq::Worker
 
     def perform(*args); end
   end
-  # rubocop:enable RSpec/LeakyConstantDeclaration
 end

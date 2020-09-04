@@ -9,13 +9,19 @@ require "sidekiq/tracer"
 # to avoid forking and updating the test-tracer gem to handle the latest version of OpenTracing
 # rubocop:disable Metrics/ParameterLists, Lint/UnusedMethodArgument, Layout/LineLength
 module TestTracerUpdates
+  class FakeScope
+    attr_accessor :span
+    def initialize(span)
+      @span = span
+    end
+  end
+
   def start_span(operation_name, child_of: nil, references: nil, start_time: Time.now, tags: nil, ignore_active_scope: false)
     super(operation_name, child_of: child_of, references: references, start_time: start_time, tags: tags)
   end
 
   def start_active_span(operation_name, child_of: nil, references: nil, start_time: Time.now, tags: nil, ignore_active_scope: false)
-    start_span(operation_name, child_of: child_of, references: references, start_time: start_time, tags: tags)
-    yield
+    yield FakeScope.new(start_span(operation_name, child_of: child_of, references: references, start_time: start_time, tags: tags))
   end
 end
 Test::Tracer.prepend TestTracerUpdates

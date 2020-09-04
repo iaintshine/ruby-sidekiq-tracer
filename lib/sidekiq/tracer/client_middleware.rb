@@ -5,11 +5,12 @@ module Sidekiq
     class ClientMiddleware
       include Commons
 
-      attr_reader :tracer, :active_span
+      attr_reader :tracer, :active_span, :after_trace
 
-      def initialize(tracer:, active_span:)
+      def initialize(tracer:, active_span:, after_trace:)
         @tracer = tracer
         @active_span = active_span
+        @after_trace = after_trace
       end
 
       def call(_worker_class, job, _queue, _redis_pool)
@@ -22,6 +23,7 @@ module Sidekiq
         tag_errors(span, e) if span
         raise
       ensure
+        after_trace&.call(span) if span
         span&.finish
       end
 

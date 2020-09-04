@@ -11,34 +11,34 @@ require "sidekiq/tracer/server_middleware"
 module Sidekiq
   module Tracer
     class << self
-      def instrument(tracer: OpenTracing.global_tracer, active_span: nil)
-        instrument_client(tracer: tracer, active_span: active_span)
-        instrument_server(tracer: tracer, active_span: active_span)
+      def instrument(tracer: OpenTracing.global_tracer, active_span: nil, after_trace: nil)
+        instrument_client(tracer: tracer, active_span: active_span, after_trace: after_trace)
+        instrument_server(tracer: tracer, active_span: active_span, after_trace: after_trace)
       end
 
-      def instrument_client(tracer: OpenTracing.global_tracer, active_span: nil)
+      def instrument_client(tracer: OpenTracing.global_tracer, active_span: nil, after_trace: nil)
         Sidekiq.configure_client do |config|
-          config.client_middleware { |chain| add_client_middleware(chain, tracer, active_span) }
+          config.client_middleware { |chain| add_client_middleware(chain, tracer, active_span, after_trace) }
         end
       end
 
-      def instrument_server(tracer: OpenTracing.global_tracer, active_span: nil)
+      def instrument_server(tracer: OpenTracing.global_tracer, active_span: nil, after_trace: nil)
         Sidekiq.configure_server do |config|
-          config.client_middleware { |chain| add_client_middleware(chain, tracer, active_span) }
-          config.server_middleware { |chain| add_server_middleware(chain, tracer, active_span) }
+          config.client_middleware { |chain| add_client_middleware(chain, tracer, active_span, after_trace) }
+          config.server_middleware { |chain| add_server_middleware(chain, tracer, active_span, after_trace) }
         end
 
         return unless defined?(Sidekiq::Testing)
 
-        Sidekiq::Testing.server_middleware { |chain| add_server_middleware(chain, tracer, active_span) }
+        Sidekiq::Testing.server_middleware { |chain| add_server_middleware(chain, tracer, active_span, after_trace) }
       end
 
-      def add_client_middleware(chain, tracer, active_span)
-        chain.add Sidekiq::Tracer::ClientMiddleware, tracer: tracer, active_span: active_span
+      def add_client_middleware(chain, tracer, active_span, after_trace)
+        chain.add Sidekiq::Tracer::ClientMiddleware, tracer: tracer, active_span: active_span, after_trace: after_trace
       end
 
-      def add_server_middleware(chain, tracer, active_span)
-        chain.add Sidekiq::Tracer::ServerMiddleware, tracer: tracer, active_span: active_span
+      def add_server_middleware(chain, tracer, active_span, after_trace)
+        chain.add Sidekiq::Tracer::ServerMiddleware, tracer: tracer, active_span: active_span, after_trace: after_trace
       end
     end
   end

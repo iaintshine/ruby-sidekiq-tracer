@@ -5,11 +5,12 @@ module Sidekiq
     class ServerMiddleware
       include Commons
 
-      attr_reader :tracer, :active_span
+      attr_reader :tracer, :active_span, :after_trace
 
-      def initialize(tracer:, active_span:)
+      def initialize(tracer:, active_span:, after_trace:)
         @tracer = tracer
         @active_span = active_span
+        @after_trace = after_trace
       end
 
       # rubocop:disable Metrics/MethodLength
@@ -27,6 +28,8 @@ module Sidekiq
           rescue StandardError => e
             tag_errors(scope.span, e) if scope.span
             raise
+          ensure
+            after_trace&.call(scope.span) if scope.span
           end
         end
       end

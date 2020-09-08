@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sidekiq-instrumentation (1.2.1)
+    sidekiq-instrumentation (1.2.2)
       opentracing (>= 0.3.1)
 
 GEM

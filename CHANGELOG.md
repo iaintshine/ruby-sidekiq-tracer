@@ -2,6 +2,10 @@
 Changelog
 =========
 
+## 2.0.0.pre1 09/26/2022
+  * Update for Ruby 3 compatibiity
+  * Middlewares now take positional arguments rather than using keywords
+
 ## 1.2.2 09/08/2020
   * Add optional after_trace hook to ClientMiddleware
 

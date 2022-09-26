@@ -34,11 +34,11 @@ module Sidekiq
       end
 
       def add_client_middleware(chain, tracer, active_span)
-        chain.add Sidekiq::Tracer::ClientMiddleware, tracer: tracer, active_span: active_span
+        chain.add Sidekiq::Tracer::ClientMiddleware, tracer, active_span
       end
 
       def add_server_middleware(chain, tracer, active_span, after_trace)
-        chain.add Sidekiq::Tracer::ServerMiddleware, tracer: tracer, active_span: active_span, after_trace: after_trace
+        chain.add Sidekiq::Tracer::ServerMiddleware, tracer, active_span, after_trace
       end
     end
   end

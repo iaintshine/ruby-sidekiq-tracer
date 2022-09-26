@@ -7,7 +7,7 @@ module Sidekiq
 
       attr_reader :tracer, :active_span, :after_trace
 
-      def initialize(tracer:, active_span:, after_trace:)
+      def initialize(tracer, active_span, after_trace)
         @tracer = tracer
         @active_span = active_span
         @after_trace = after_trace

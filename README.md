@@ -43,11 +43,11 @@ Server-side:
 ```ruby
 Sidekiq.configure_server do |config|
   config.client_middleware do |chain|
-    chain.add Sidekiq::Tracer::ClientMiddleware, tracer: OpenTracing.global_tracer
+    chain.add Sidekiq::Tracer::ClientMiddleware, OpenTracing.global_tracer
   end
 
   config.server_middleware do |chain|
-    chain.add Sidekiq::Tracer::ServerMiddleware, tracer: OpenTracing.global_tracer
+    chain.add Sidekiq::Tracer::ServerMiddleware, OpenTracing.global_tracer
   end
 end
 ```
@@ -57,7 +57,7 @@ Client-side:
 ```ruby
 Sidekiq.configure_client do |config|
   config.client_middleware do |chain|
-    chain.add Sidekiq::Tracer::ClientMiddleware, tracer: OpenTracing.global_tracer
+    chain.add Sidekiq::Tracer::ClientMiddleware, OpenTracing.global_tracer
   end
 end
 ```

@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   gem: doximity/gem-publisher@0
+  pipefitter: doximity/pipefitter@0
 
 executors:
   ruby-latest:
@@ -95,6 +96,13 @@ workflows:
           name: gem-build
           requires:
             - build
+      - pipefitter/generate:
+        context: artifact_publishing
+        filters:
+          branches:
+            only: "/.*/"
+          tags:
+            only: "/^v.*/"
       - pre-release-approval:
           <<: *pr_only
           type: approval

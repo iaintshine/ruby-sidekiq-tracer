@@ -1,0 +1,6 @@
+ruby-versions: ["2.7", "3.0", "3.1"]
+gem-versions: ["rails-6.1.6", "rails-7.0.3"]
+run-matrix-separately: true
+rubocop:
+  run-separately: true
+test-job-name: "build"

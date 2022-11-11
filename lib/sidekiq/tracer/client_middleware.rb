@@ -35,7 +35,7 @@ module Sidekiq
 
       def tag_errors(span, error)
         span.set_tag("error", true)
-        span.log(event: "error", 'error.object': error)
+        span.log_kv({event: "error", 'error.object': error})
       end
 
       def inject(span, job)
